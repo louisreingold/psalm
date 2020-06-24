@@ -273,12 +273,19 @@ class CommentAnalyzer
             return [];
         }
 
-        return self::getTypeAliasesFromCommentLines(
-            $parsed_docblock->tags['psalm-type'],
+        return louis_jack_in_the_global_types(
+            /* previously, psalm just returned the result of this function directly */
+            self::getTypeAliasesFromCommentLines(
+                $parsed_docblock->tags['psalm-type'],
+                $aliases,
+                $type_aliases,
+                $self_fqcln
+            ),
             $aliases,
             $type_aliases,
             $self_fqcln
         );
+
     }
 
     /**
@@ -290,7 +297,7 @@ class CommentAnalyzer
      *
      * @return array<string, TypeAlias\InlineTypeAlias>
      */
-    private static function getTypeAliasesFromCommentLines(
+    public static function getTypeAliasesFromCommentLines(
         array $type_alias_comment_lines,
         Aliases $aliases,
         ?array $type_aliases,

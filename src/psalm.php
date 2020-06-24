@@ -528,6 +528,7 @@ $stdout_report_options->format = $output_format;
 $stdout_report_options->show_snippet = !isset($options['show-snippet']) || $options['show-snippet'] !== "false";
 $stdout_report_options->pretty = isset($options['pretty-print']) && $options['pretty-print'] !== "false";
 
+require_once('Louis/global-types.php');
 $project_analyzer = new ProjectAnalyzer(
     $config,
     $providers,
