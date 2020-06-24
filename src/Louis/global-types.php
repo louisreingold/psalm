@@ -3,20 +3,22 @@
 /* PSALM HAS BEEN MODIFIED TO INCLUDE THIS FILE IN PSALM.PHP RIGHT BEFORE RUNNING THE PROJECT ANALYZER */
 
 /* LOAD THE GLOBAL TYPES */
+
 $GLOBAL_TYPE_COMMENT = generate_global_type_comment(
-    [
-        '../test/src/types/types.php',
-        '../test/src/types/more-types.php'
-    ]
+    array_merge(
+        glob("../plugin/psalm-types/*.php"),
+        glob("../plugin/psalm-types/*/*.php"),
+    )
 );
 
 /**
  * @param string[] $files_to_parse
  * @return IDontKNow
  */
-function generate_global_type_comment($filenames) {
+function generate_global_type_comment($filenames)
+{
 
-    $global_types_string = array_reduce($filenames, function($acc, $item) {
+    $global_types_string = array_reduce($filenames, function ($acc, $item) {
         return $acc . "\n\n" . str_replace("?>", "", str_replace("<?php", "", file_get_contents($item)));
     });
 
@@ -26,25 +28,28 @@ function generate_global_type_comment($filenames) {
         -1,
         -1);
 
+    $parsed_comment = \Psalm\DocComment::parsePreservingLength($global_comment);
 
-    return \Psalm\DocComment::parsePreservingLength($global_comment);
+    // var_dump($parsed_comment);
+
+    return $parsed_comment;
 
 }
 
-
 /*
-JACK THE GLOBAL TYPES INTO PSALM 
+JACK THE GLOBAL TYPES INTO PSALM
 Psalm has been modified in CommentAnalyzer.php getTypeAliasesFromComment() to call this function
-*/
+ */
 
 /**
  * @param array<string, TypeAlias\InlineTypeAlias> $t
  * @return array<string, TypeAlias\InlineTypeAlias>
- * i have no idea what $aliases, $type_aliases, and $self_fqcln are, but 
+ * i have no idea what $aliases, $type_aliases, and $self_fqcln are, but
  * CommentAnalyzer::getTypeAliasesFromCommentLines wants them
  */
 
-function louis_jack_in_the_global_types($t, $aliases, $type_aliases, $self_fqcln) {
+function louis_jack_in_the_global_types($t, $aliases, $type_aliases, $self_fqcln)
+{
 
     global $GLOBAL_TYPE_COMMENT;
 
@@ -56,4 +61,3 @@ function louis_jack_in_the_global_types($t, $aliases, $type_aliases, $self_fqcln
     ), $t);
 
 }
-
