@@ -1,5 +1,5 @@
 <?php
-require_once('command_functions.php');
+require_once 'command_functions.php';
 
 use Psalm\Config;
 use Psalm\Internal\Analyzer\ProjectAnalyzer;
@@ -31,7 +31,7 @@ $valid_long_options = [
     'disable-on-change::',
     'enable-autocomplete',
     'use-extended-diagnostic-codes',
-    'verbose'
+    'verbose',
 ];
 
 $args = array_slice($argv, 1);
@@ -173,7 +173,7 @@ if (isset($options['root'])) {
     $options['r'] = $options['root'];
 }
 
-$current_dir = (string)getcwd() . DIRECTORY_SEPARATOR;
+$current_dir = (string) getcwd() . DIRECTORY_SEPARATOR;
 
 if (isset($options['r']) && is_string($options['r'])) {
     $root_path = realpath($options['r']);
@@ -239,6 +239,7 @@ $providers = new Psalm\Internal\Provider\Providers(
     new Psalm\Internal\Provider\ProjectCacheProvider($current_dir . DIRECTORY_SEPARATOR . 'composer.lock')
 );
 
+require_once 'Louis/global-types.php';
 $project_analyzer = new ProjectAnalyzer(
     $config,
     $providers
@@ -249,8 +250,8 @@ if (isset($options['disable-on-change'])) {
 }
 
 $project_analyzer->provide_completion = !isset($options['enable-autocomplete'])
-    || !is_string($options['enable-autocomplete'])
-    || strtolower($options['enable-autocomplete']) !== 'false';
+|| !is_string($options['enable-autocomplete'])
+|| strtolower($options['enable-autocomplete']) !== 'false';
 
 $config->visitComposerAutoloadFiles($project_analyzer);
 
