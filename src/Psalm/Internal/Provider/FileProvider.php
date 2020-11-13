@@ -1,14 +1,6 @@
 <?php
 namespace Psalm\Internal\Provider;
 
-use function file_exists;
-use function file_get_contents;
-use function file_put_contents;
-use function filemtime;
-use function in_array;
-use function is_dir;
-use function strtolower;
-
 class FileProvider
 {
     /**
@@ -44,7 +36,21 @@ class FileProvider
             throw new \UnexpectedValueException('File ' . $file_path . ' is a directory');
         }
 
-        return (string)file_get_contents($file_path);
+        global $GLOBAL_TYPES_STRING;
+
+        $contents = (string) file_get_contents($file_path);
+
+        $contents = str_replace("<?php", "<?php
+
+        " .
+
+            $GLOBAL_TYPES_STRING
+
+            . "
+
+        ", $contents);
+
+        return $contents;
     }
 
     /**
@@ -90,7 +96,7 @@ class FileProvider
             throw new \UnexpectedValueException('File should exist to get modified time');
         }
 
-        return (int)filemtime($file_path);
+        return (int) filemtime($file_path);
     }
 
     /**
@@ -161,7 +167,7 @@ class FileProvider
             if (!$iterator->isDot()) {
                 $extension = $iterator->getExtension();
                 if (in_array($extension, $file_extensions, true)) {
-                    $file_paths[] = (string)$iterator->getRealPath();
+                    $file_paths[] = (string) $iterator->getRealPath();
                 }
             }
 

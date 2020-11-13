@@ -9,39 +9,15 @@ use Psalm\Exception\IncorrectDocblockException;
 use Psalm\Exception\TypeParseTreeException;
 use Psalm\FileSource;
 use Psalm\Internal\Scanner\ClassLikeDocblockComment;
-use Psalm\Internal\Scanner\DocblockParser;
 use Psalm\Internal\Scanner\FunctionDocblockComment;
-use Psalm\Internal\Scanner\VarDocblockComment;
 use Psalm\Internal\Scanner\ParsedDocblock;
+use Psalm\Internal\Scanner\VarDocblockComment;
 use Psalm\Internal\Type\ParseTree;
 use Psalm\Internal\Type\ParseTreeCreator;
 use Psalm\Internal\Type\TypeAlias;
 use Psalm\Internal\Type\TypeParser;
 use Psalm\Internal\Type\TypeTokenizer;
 use Psalm\Type;
-use function array_column;
-use function array_unique;
-use function trim;
-use function substr_count;
-use function strlen;
-use function preg_replace;
-use function str_replace;
-use function preg_match;
-use function count;
-use function reset;
-use function preg_split;
-use const PREG_SPLIT_DELIM_CAPTURE;
-use const PREG_SPLIT_NO_EMPTY;
-use function array_shift;
-use function implode;
-use function substr;
-use function strpos;
-use function strtolower;
-use function in_array;
-use function explode;
-use function array_merge;
-use const PREG_OFFSET_CAPTURE;
-use function rtrim;
 
 /**
  * @internal
@@ -92,7 +68,7 @@ class CommentAnalyzer
         Aliases $aliases,
         array $template_type_map = null,
         ?array $type_aliases = null
-    ) : array {
+    ): array{
         $var_id = null;
 
         $var_type_tokens = null;
@@ -213,16 +189,16 @@ class CommentAnalyzer
     private static function decorateVarDocblockComment(
         VarDocblockComment $var_comment,
         ParsedDocblock $parsed_docblock
-    ) : void {
+    ): void {
         $var_comment->deprecated = isset($parsed_docblock->tags['deprecated']);
         $var_comment->internal = isset($parsed_docblock->tags['internal']);
         $var_comment->readonly = isset($parsed_docblock->tags['readonly'])
-            || isset($parsed_docblock->tags['psalm-readonly'])
-            || isset($parsed_docblock->tags['psalm-readonly-allow-private-mutation']);
+        || isset($parsed_docblock->tags['psalm-readonly'])
+        || isset($parsed_docblock->tags['psalm-readonly-allow-private-mutation']);
 
         $var_comment->allow_private_mutation
-            = isset($parsed_docblock->tags['psalm-allow-private-mutation'])
-            || isset($parsed_docblock->tags['psalm-readonly-allow-private-mutation']);
+        = isset($parsed_docblock->tags['psalm-allow-private-mutation'])
+        || isset($parsed_docblock->tags['psalm-readonly-allow-private-mutation']);
 
         if (isset($parsed_docblock->tags['psalm-taint-escape'])) {
             foreach ($parsed_docblock->tags['psalm-taint-escape'] as $param) {
@@ -246,7 +222,7 @@ class CommentAnalyzer
         }
     }
 
-    private static function sanitizeDocblockType(string $docblock_type) : string
+    private static function sanitizeDocblockType(string $docblock_type): string
     {
         $docblock_type = preg_replace('@^[ \t]*\*@m', '', $docblock_type);
         $docblock_type = preg_replace('/,\n\s+\}/', '}', $docblock_type);
@@ -273,14 +249,21 @@ class CommentAnalyzer
             return [];
         }
 
-        return louis_jack_in_the_global_types(
-            /* previously, psalm just returned the result of this function directly */
-            self::getTypeAliasesFromCommentLines(
-                $parsed_docblock->tags['psalm-type'],
-                $aliases,
-                $type_aliases,
-                $self_fqcln
-            ),
+        // return louis_jack_in_the_global_types(
+        //     /* previously, psalm just returned the result of this function directly */
+        //     self::getTypeAliasesFromCommentLines(
+        //         $parsed_docblock->tags['psalm-type'],
+        //         $aliases,
+        //         $type_aliases,
+        //         $self_fqcln
+        //     ),
+        //     $aliases,
+        //     $type_aliases,
+        //     $self_fqcln
+        // );
+
+        return self::getTypeAliasesFromCommentLines(
+            $parsed_docblock->tags['psalm-type'],
             $aliases,
             $type_aliases,
             $self_fqcln
@@ -624,7 +607,7 @@ class CommentAnalyzer
             }
             $info->psalm_internal = reset($parsed_docblock->tags['psalm-internal']);
 
-            if (! $info->internal) {
+            if (!$info->internal) {
                 throw new DocblockParseException('@psalm-internal annotation used without @internal');
             }
         }
@@ -646,7 +629,7 @@ class CommentAnalyzer
                 $info->throws[] = [
                     $throws_class,
                     $offset + $comment->getFilePos(),
-                    $comment->getLine() + substr_count($comment->getText(), "\n", 0, $offset)
+                    $comment->getLine() + substr_count($comment->getText(), "\n", 0, $offset),
                 ];
             }
         }
@@ -676,7 +659,7 @@ class CommentAnalyzer
                         $template_name,
                         $template_modifier,
                         implode(' ', $template_type),
-                        false
+                        false,
                     ];
                 } else {
                     $info->templates[] = [$template_name, null, null, false];
@@ -748,7 +731,7 @@ class CommentAnalyzer
 
         $info->variadic = isset($parsed_docblock->tags['psalm-variadic']);
         $info->pure = isset($parsed_docblock->tags['psalm-pure'])
-            || isset($parsed_docblock->tags['pure']);
+        || isset($parsed_docblock->tags['pure']);
 
         if (isset($parsed_docblock->tags['psalm-mutation-free'])) {
             $info->mutation_free = true;
@@ -802,7 +785,7 @@ class CommentAnalyzer
                 $info->return_type_description = $line_parts ? implode(' ', $line_parts) : null;
 
                 $info->return_type_line_number
-                    = $comment->getLine() + substr_count($comment->getText(), "\n", 0, $offset);
+                = $comment->getLine() + substr_count($comment->getText(), "\n", 0, $offset);
                 $info->return_type_start = $start;
                 $info->return_type_end = $end;
             } else {
@@ -848,7 +831,7 @@ class CommentAnalyzer
                         $template_modifier,
                         implode(' ', $template_type),
                         false,
-                        $offset
+                        $offset,
                     ];
                 } else {
                     $info->templates[] = [$template_name, null, null, false, $offset];
@@ -875,7 +858,7 @@ class CommentAnalyzer
                         $template_modifier,
                         implode(' ', $template_type),
                         true,
-                        $offset
+                        $offset,
                     ];
                 } else {
                     $info->templates[] = [$template_name, null, null, true, $offset];
@@ -922,7 +905,7 @@ class CommentAnalyzer
                 throw new DocblockParseException('psalm-internal annotation used without specifying namespace');
             }
 
-            if (! $info->internal) {
+            if (!$info->internal) {
                 throw new DocblockParseException('@psalm-internal annotation used without @internal');
             }
         }
@@ -1072,10 +1055,9 @@ class CommentAnalyzer
                     }
 
                     $args[] = ($method_tree_child->byref ? '&' : '')
-                        . ($method_tree_child->variadic ? '...' : '')
-                        . $method_tree_child->name
+                    . ($method_tree_child->variadic ? '...' : '')
+                    . $method_tree_child->name
                         . ($method_tree_child->default != '' ? ' = ' . $method_tree_child->default : '');
-
 
                     if ($method_tree_child->children) {
                         try {
@@ -1086,8 +1068,8 @@ class CommentAnalyzer
                             );
                         }
                         $docblock_lines[] = '@param \\' . $param_type . ' '
-                            . ($method_tree_child->variadic ? '...' : '')
-                            . $method_tree_child->name;
+                        . ($method_tree_child->variadic ? '...' : '')
+                        . $method_tree_child->name;
                     }
                 }
 
@@ -1161,7 +1143,7 @@ class CommentAnalyzer
         ClassLikeDocblockComment $info,
         array $specials,
         string $property_tag
-    ) : void {
+    ): void {
         $magic_property_comments = isset($specials[$property_tag]) ? $specials[$property_tag] : [];
 
         foreach ($magic_property_comments as $offset => $property) {

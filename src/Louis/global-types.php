@@ -4,12 +4,26 @@
 
 /* LOAD THE GLOBAL TYPES */
 
-$GLOBAL_TYPE_COMMENT = generate_global_type_comment(
+// $GLOBAL_TYPE_COMMENT = generate_global_type_comment(
+//     array_merge(
+//         glob("../plugin/psalm-types/*.php"),
+//         glob("../plugin/psalm-types/*/*.php"),
+//     )
+// );
+
+$GLOBAL_TYPES_STRING = generate_global_types_string(
     array_merge(
         glob("../plugin/psalm-types/*.php"),
         glob("../plugin/psalm-types/*/*.php"),
     )
 );
+
+function generate_global_types_string($filenames)
+{
+    return array_reduce($filenames, function ($acc, $item) {
+        return $acc . "\n\n" . str_replace("?>", "", str_replace("<?php", "", file_get_contents($item)));
+    });
+}
 
 /**
  * @param string[] $files_to_parse
@@ -18,9 +32,7 @@ $GLOBAL_TYPE_COMMENT = generate_global_type_comment(
 function generate_global_type_comment($filenames)
 {
 
-    $global_types_string = array_reduce($filenames, function ($acc, $item) {
-        return $acc . "\n\n" . str_replace("?>", "", str_replace("<?php", "", file_get_contents($item)));
-    });
+    $global_types_string = generate_global_types_string($filenames);
 
     $global_comment = new \PhpParser\Comment\Doc(
         $global_types_string
