@@ -40,6 +40,11 @@ class FileProvider
 
         $contents = (string) file_get_contents($file_path);
 
+        if (strpos($contents, '@psalm-ignore-file') !== false) {
+            echo 'Ignoring ' . explode('plugins/unicorn', $file_path)[1] . ' because @psalm-ignore-file found' . "\n";
+            return "";
+        }
+
         $contents = str_replace("<?php", "<?php
 
         " .
