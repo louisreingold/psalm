@@ -18,6 +18,9 @@ $GLOBAL_TYPES_STRING = generate_global_types_string(
     )
 );
 
+// make is a fuckin g
+$GLOBAL_TYPES_STRING_LINE_LENGTH = substr_count($GLOBAL_TYPES_STRING, "\n") + 4;
+
 function generate_global_types_string($filenames)
 {
     return array_reduce($filenames, function ($acc, $item) {

@@ -148,8 +148,11 @@ class IssueData
         $shortcode = 0,
         $error_level = -1
     ) {
+
+        global $GLOBAL_TYPES_STRING_LINE_LENGTH;
+
         $this->severity = $severity;
-        $this->line_from = $line_from;
+        $this->line_from = abs($line_from - $GLOBAL_TYPES_STRING_LINE_LENGTH); // ensure its a positive number in case psalm does weird shit if it isnt
         $this->line_to = $line_to;
         $this->type = $type;
         $this->message = $message;
