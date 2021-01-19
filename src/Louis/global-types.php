@@ -18,8 +18,6 @@ $GLOBAL_TYPES_STRING = generate_global_types_string(
     )
 );
 
-echo $GLOBAL_TYPES_STRING;
-
 // make is a fuckin g
 $GLOBAL_TYPES_STRING_LINE_LENGTH = substr_count($GLOBAL_TYPES_STRING, "\n") + 4;
 
